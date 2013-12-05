@@ -1,5 +1,5 @@
 ---
-title: "My links"
+title: "Links"
 ---
 
 # CMS
