@@ -20,15 +20,16 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-size: 100%; }
+  font-size: 100%; 
+}
 
 h1 { margin-bottom: 1em; }
 p { margin: 1em 0; }
 
-a         { color: #00a; }
+/*a         { color: #00a; }
 a:hover   { color: #000; }
 a:visited { color: #a0a; }
-
+*/
 /*****************************************************************************/
 /*
 /* Home
@@ -73,12 +74,22 @@ a:visited { color: #a0a; }
   margin-bottom: 2em;
 }
 
+.title h1 {
+  font-size: 55px;
+  line-height: 86px;
+  font-family: mf-brandon-text-230546;
+  text-align: left;
+  letter-spacing: -3px;
+  text-indent: -2px;
+  color: rgba(65,33,124,1);
+}
+
 .title a {
-  color: #a00;
+  /*color: #a00;*/
 }
 
 .title a:hover {
-  color: #000;
+  /*color: #000;*/
 }
 
 .header a.extra {
@@ -102,10 +113,22 @@ a:visited { color: #a0a; }
   overflow: hidden;
 }
 
-.footer .contact {
+.footer .contact-orig {
   float: left;
   margin-right: 3em;
 }
+
+.footer .contact {
+  width: 482px;
+  font-family: Actor;
+  font-weight: 400;
+  font-style: normal;
+  margin: 0px 0px -3px 0px;
+  letter-spacing: 0px;
+  text-indent: -1px;
+  text-transform: none;
+}
+
 
 .footer .contact a {
   color: #8085C1;
