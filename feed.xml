@@ -6,9 +6,89 @@
 </description>
     <link>http://siebelmonitoring.com/</link>
     <atom:link href="http://siebelmonitoring.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Fri, 22 Aug 2014 16:39:13 +0300</pubDate>
-    <lastBuildDate>Fri, 22 Aug 2014 16:39:13 +0300</lastBuildDate>
+    <pubDate>Fri, 22 Aug 2014 16:52:03 +0300</pubDate>
+    <lastBuildDate>Fri, 22 Aug 2014 16:52:03 +0300</lastBuildDate>
     <generator>Jekyll v2.3.0</generator>
+    
+      <item>
+        <title>Siebel component&#39;s memory usage</title>
+        <description>&lt;p&gt;Sometimes, especially if there are issues with component stability and/or performance,
+it is vital to know how much memory is consumed by particular Siebel component.
+Also having historical records of memory usage is a help for capacity planning,
+component configuration adjustments, as well as quick and dirty way to identify
+memory leaks.&lt;/p&gt;
+
+&lt;p&gt;Depending on your component’s configuration one or more OS processes would be started.
+It is no big deal to find out how much memory is taken by running process.
+But unfortunately it’s that easy to understand who-is-who between those siebel processes,
+as they share binaries and only differ by the arguments, which are pretty cryptic
+and provide no means (at least known to me) to find out which component this process implements.&lt;/p&gt;
+
+&lt;p&gt;One possible source of that PID&amp;lt;-&amp;gt;Component info could be log of the siebel root process.
+Here is a sample of that log:&lt;/p&gt;
+&lt;pre&gt;
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:08     Created multithreaded server process (OS pid =  3763    ) for SRBroker
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:08     Created server process (OS pid =        3764    ) for SCBroker
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:13     Created server process (OS pid =        3765    ) for SvrTaskPersist
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:13     Created multithreaded server process (OS pid =  3773    ) for FSMSrvr
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:13     Created multithreaded server process (OS pid =  3774    ) for SRProc
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:44     Created multithreaded server process (OS pid =  3779    ) for WfProcBatchMgr
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:44     Created multithreaded server process (OS pid =  3907    ) for CommInboundRcvr
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:44     Created multithreaded server process (OS pid =  3915    ) for CommOutboundMgr
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-07-18 00:09:44     Created server process (OS pid =        3923    ) for eCommunicationsObjMgr_enu
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-08-19 00:47:00     Created server process (OS pid =        10773   ) for EAIObjMgr_enu
+ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-08-19 00:52:06     Created server process (OS pid =        11744   ) for SrvrSched
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://gist.github.com/corvax19/158023ce55a0ca375c1c&quot;&gt;Here&lt;/a&gt; is the awk script which does exactly that:
+lists your running siebel processes, correlates those with Siebel components and counts memory usage metrics (separatelly RSS and VSS)
+by each Siebel component. Delimited output is similar to this:&lt;/p&gt;
+
+&lt;pre&gt;
+|COMPONENT|PROC_COUNT|SZ_BYTES|VSZ_BYTES
+SCBroker|1|6729728|7045120
+SrvrSched|1|1710669824|1711783936
+eCommunicationsObjMgr_enu|1|447918080|449576960
+FSMSrvr|1|132247552|135626752
+CommOutboundMgr|1|245530624|248152064
+T2BulkWfProcMgr|1|157794304|158760960
+WfProcMgr|5|5176311808|5199790080
+EAIObjMgr_enu|1|1072316416|1073201152
+SRProc|1|392593408|397983744
+EAIObjMgr_cti|1|661307392|663863296
+EAIObjMgr_lic|1|1603371008|1604829184
+SvrTaskPersist|1|820662272|821460992
+SRBroker|1|96567296|98238464
+eCommunicationsObjMgr_sve|5|7556464640|7565557760
+WfProcBatchMgr|5|1348419584|1361477632
+CommInboundRcvr|1|178843648|189513728
+CustomAppObjMgr_sve|1|16330752|17416192
+TOTAL|29|21624078336|21704278016
+&lt;/pre&gt;
+
+&lt;p&gt;First line is special - very first char is delimeter, then comes list of columns.
+Last line also is special - totals by all components.&lt;/p&gt;
+
+&lt;p&gt;If you are brave and lazy, you can run it without any installation at all:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;curl -Ls http://goo.gl/CgtjQG|awk -f -&lt;/code&gt;&lt;/p&gt;
+</description>
+        <pubDate>Fri, 22 Aug 2014 16:37:40 +0300</pubDate>
+        <link>http://siebelmonitoring.com/2014/08/22/siebel-component-memory-usage.html</link>
+        <guid isPermaLink="true">http://siebelmonitoring.com/2014/08/22/siebel-component-memory-usage.html</guid>
+        
+        <category>components</category>
+        
+        <category>memory</category>
+        
+        <category>awk</category>
+        
+        <category>linux</category>
+        
+        <category>unix</category>
+        
+        
+      </item>
     
   </channel>
 </rss>
