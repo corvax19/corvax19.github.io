@@ -6,8 +6,8 @@
 </description>
     <link>http://siebelmonitoring.com/</link>
     <atom:link href="http://siebelmonitoring.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 27 Aug 2014 15:47:57 +0300</pubDate>
-    <lastBuildDate>Wed, 27 Aug 2014 15:47:57 +0300</lastBuildDate>
+    <pubDate>Wed, 27 Aug 2014 17:36:04 +0300</pubDate>
+    <lastBuildDate>Wed, 27 Aug 2014 17:36:04 +0300</lastBuildDate>
     <generator>Jekyll v2.3.0</generator>
     
       <item>
@@ -40,7 +40,7 @@ ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-08-19 00:47
 ServerLog       ProcessCreate   1       0000118453c80ead:0      2014-08-19 00:52:06     Created server process (OS pid =        11744   ) for SrvrSched
 &lt;/pre&gt;
 
-&lt;p&gt;&lt;a href=&quot;https://gist.github.com/corvax19/158023ce55a0ca375c1c&quot;&gt;Here&lt;/a&gt; is the awk script which does exactly that:
+&lt;p&gt;&lt;a href=&quot;https://gist.github.com/corvax19/f31ecf8a033e09bc1096&quot;&gt;Here&lt;/a&gt; is the awk script which does exactly that:
 lists your running siebel processes, correlates those with Siebel components and counts memory usage metrics (separatelly RSS and VSS)
 by each Siebel component. Delimited output is similar to this:&lt;/p&gt;
 
@@ -71,7 +71,7 @@ Last line also is special - totals by all components.&lt;/p&gt;
 
 &lt;p&gt;If you are brave and lazy, you can run it without any installation at all:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;curl -Ls http://goo.gl/o9UqzQ|awk -f -&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;curl -Ls  http://goo.gl/RAQ4eV|awk -f -&lt;/code&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 22 Aug 2014 00:00:00 +0300</pubDate>
         <link>http://siebelmonitoring.com/2014/08/22/siebel-component-memory-usage.html</link>
