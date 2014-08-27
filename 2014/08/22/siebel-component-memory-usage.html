@@ -107,33 +107,33 @@ lists your running siebel processes, correlates those with Siebel components and
 by each Siebel component. Delimited output is similar to this:</p>
 
 <pre>
-|COMPONENT|PROC_COUNT|SZ_BYTES|VSZ_BYTES
-SCBroker|1|6729728|7045120
-SrvrSched|1|1710669824|1711783936
-eCommunicationsObjMgr_enu|1|447918080|449576960
-FSMSrvr|1|132247552|135626752
-CommOutboundMgr|1|245530624|248152064
-T2BulkWfProcMgr|1|157794304|158760960
-WfProcMgr|5|5176311808|5199790080
-EAIObjMgr_enu|1|1072316416|1073201152
-SRProc|1|392593408|397983744
-EAIObjMgr_cti|1|661307392|663863296
-EAIObjMgr_lic|1|1603371008|1604829184
-SvrTaskPersist|1|820662272|821460992
-SRBroker|1|96567296|98238464
-eCommunicationsObjMgr_sve|5|7556464640|7565557760
-WfProcBatchMgr|5|1348419584|1361477632
-CommInboundRcvr|1|178843648|189513728
-CustomAppObjMgr_sve|1|16330752|17416192
-TOTAL|29|21624078336|21704278016
+|ts|host|enterprise|component|PROC_COUNT|SZ_BYTES|VSZ_BYTES
+1409142857|server1|SIEBENT1|SCBroker|1|6766592|7045120
+1409142857|server1|SIEBENT1|eCommunicationsObjMgr_enu|1|334606336|336183296
+1409142857|server1|SIEBENT1|FSMSrvr|1|99758080|105218048
+1409142857|server1|SIEBENT1|CommOutboundMgr|1|221429760|224821248
+1409142857|server1|SIEBENT1|WfProcMgr|5|3914874880|3940581376
+1409142857|server1|SIEBENT1|EAIObjMgr_enu|1|951222272|952614912
+1409142857|server1|SIEBENT1|SRProc|1|124665856|126287872
+1409142857|server1|SIEBENT1|SvrTaskPersist|1|239779840|240566272
+1409142857|server1|SIEBENT1|SRBroker|1|68911104|70696960
+1409142857|server1|SIEBENT1|eCommunicationsObjMgr_enu|6|8282849280|8294023168
+1409142857|server1|SIEBENT1|WfProcBatchMgr|5|1289453568|1302757376
+1409142857|server1|SIEBENT1|CommInboundRcvr|1|181596160|192397312
+1409142857|server1|SIEBENT1|CustomAppObjMgr_sve|1|16248832|17416192
+...
+1409142857|server1|SIEBENT1|TOTAL_ALL_COMP|29|17303388160|17386618880
 </pre>
 
 <p>First line is special - very first char is delimeter, then comes list of columns.
+Column names in lower case form subject of monitoring - timestamp, host name, siebel enterprise and 
+component’s name. Column names in upper case are objects of monitoring - number of processes/MTS,
+resident set size and virtual memory size (in bytes).
 Last line also is special - totals by all components.</p>
 
 <p>If you are brave and lazy, you can run it without any installation at all:</p>
 
-<p><code>curl -Ls http://goo.gl/CgtjQG|awk -f -</code></p>
+<p><code>curl -Ls http://goo.gl/o9UqzQ|awk -f -</code></p>
 
   </article>
 
