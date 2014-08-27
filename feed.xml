@@ -6,8 +6,8 @@
 </description>
     <link>http://siebelmonitoring.com/</link>
     <atom:link href="http://siebelmonitoring.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 27 Aug 2014 17:36:04 +0300</pubDate>
-    <lastBuildDate>Wed, 27 Aug 2014 17:36:04 +0300</lastBuildDate>
+    <pubDate>Wed, 27 Aug 2014 17:45:13 +0300</pubDate>
+    <lastBuildDate>Wed, 27 Aug 2014 17:45:13 +0300</lastBuildDate>
     <generator>Jekyll v2.3.0</generator>
     
       <item>
@@ -71,7 +71,7 @@ Last line also is special - totals by all components.&lt;/p&gt;
 
 &lt;p&gt;If you are brave and lazy, you can run it without any installation at all:&lt;/p&gt;
 
-&lt;p&gt;&lt;code&gt;curl -Ls  http://goo.gl/RAQ4eV|awk -f -&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;curl -Ls http://goo.gl/W62mWG|awk -f -&lt;/code&gt;&lt;/p&gt;
 </description>
         <pubDate>Fri, 22 Aug 2014 00:00:00 +0300</pubDate>
         <link>http://siebelmonitoring.com/2014/08/22/siebel-component-memory-usage.html</link>
