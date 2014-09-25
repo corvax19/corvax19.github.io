@@ -6,8 +6,8 @@
 </description>
     <link>http://siebelmonitoring.com/</link>
     <atom:link href="http://siebelmonitoring.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 27 Aug 2014 17:45:13 +0300</pubDate>
-    <lastBuildDate>Wed, 27 Aug 2014 17:45:13 +0300</lastBuildDate>
+    <pubDate>Thu, 25 Sep 2014 10:50:06 +0200</pubDate>
+    <lastBuildDate>Thu, 25 Sep 2014 10:50:06 +0200</lastBuildDate>
     <generator>Jekyll v2.3.0</generator>
     
       <item>
@@ -20,7 +20,7 @@ memory leaks.&lt;/p&gt;
 
 &lt;p&gt;Depending on your component’s configuration one or more OS processes would be started.
 It is no big deal to find out how much memory is taken by running process.
-But unfortunately it’s that easy to understand who-is-who between those siebel processes,
+But unfortunately it’s not that easy to understand who-is-who between those siebel processes,
 as they share binaries and only differ by the arguments, which are pretty cryptic
 and provide no means (at least known to me) to find out which component this process implements.&lt;/p&gt;
 
@@ -73,7 +73,7 @@ Last line also is special - totals by all components.&lt;/p&gt;
 
 &lt;p&gt;&lt;code&gt;curl -Ls http://goo.gl/W62mWG|awk -f -&lt;/code&gt;&lt;/p&gt;
 </description>
-        <pubDate>Fri, 22 Aug 2014 00:00:00 +0300</pubDate>
+        <pubDate>Fri, 22 Aug 2014 00:00:00 +0200</pubDate>
         <link>http://siebelmonitoring.com/2014/08/22/siebel-component-memory-usage.html</link>
         <guid isPermaLink="true">http://siebelmonitoring.com/2014/08/22/siebel-component-memory-usage.html</guid>
         
@@ -86,6 +86,14 @@ Last line also is special - totals by all components.&lt;/p&gt;
         <category>linux</category>
         
         <category>unix</category>
+        
+        <category>&quot;memory</category>
+        
+        <category>leak&quot;</category>
+        
+        <category>monitoring</category>
+        
+        <category>siebel</category>
         
         
       </item>
