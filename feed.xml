@@ -6,9 +6,192 @@
 </description>
     <link>http://siebelmonitoring.com/</link>
     <atom:link href="http://siebelmonitoring.com/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 25 Sep 2014 11:30:05 +0200</pubDate>
-    <lastBuildDate>Thu, 25 Sep 2014 11:30:05 +0200</lastBuildDate>
+    <pubDate>Thu, 25 Sep 2014 15:56:30 +0200</pubDate>
+    <lastBuildDate>Thu, 25 Sep 2014 15:56:30 +0200</lastBuildDate>
     <generator>Jekyll v2.3.0</generator>
+    
+      <item>
+        <title>Find badly performing SQLs in Siebel</title>
+        <description>&lt;p&gt;Situation: your business customers complaining on Siebel bad performance.
+“Search is slow, landing page is slow, particular list applet opens slowly etc.”&lt;/p&gt;
+
+&lt;p&gt;There are many things to check in troubleshooting issues like this, but #1 candidate
+to check is your application’s database layer. As You all know, Siebel generates
+SQL statements to execute on the fly, so there is no fixed set of predefined 
+statements which you could check and tune in advance.
+Modern database engines do lot of tricky things to ensure any and all your SQL
+statements are performing well. But nothing is ideal and sometimes you
+need to get your hands dirty to return application’s performance back on rails.&lt;/p&gt;
+
+&lt;p&gt;So, how can we check Siebel SQL statement performance metrics?
+One way is to do it from database side. Both Oracle and MSSQL provide
+functionality to record execution plans and performance metrics.
+This is powerful and effective way to attack that issue, especially
+if there is good DBA to assist You, or maybe you the DBA yourself.&lt;/p&gt;
+
+&lt;p&gt;If You are not the DBA and there are no DBA around to help you,
+you still can find Siebel generated SQL statement and their basic execution metrics.
+Yes, I’m talking about Siebel logs.
+In order to proceed with this approach you need access to manipulate
+event log levels and access to log directory on the Siebel server.
+There is enough information around on how-to enable SQL logging,
+start with Oracle’s &lt;a href=&quot;http://goo.gl/eIas5L&quot;&gt;About Using SQL Tagging to Trace Long-Running Queries in Siebel Business Applications&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;You are really lucky if there is proper testing environment where 
+performance problems could be reproduced in controlled manner.
+It means you will get just a bunch of log files which one
+can parse manually and pin point bad SQL easily.&lt;/p&gt;
+
+&lt;p&gt;But often problems are environment specific and not reproducible 
+on lower environments (either due to different data sets, or database
+settings, or absence of means to reproduce specific load situations).
+In that case there is nothing left but to collect logs
+directly on problematic environment. That activity could end with
+hundreds of gigabytes of log data even on mid size installations.&lt;/p&gt;
+
+&lt;p&gt;And finally we are here - millions lines of log data and no time at all.
+You need some automation to parse the logs and find those bad SQLs.&lt;/p&gt;
+
+&lt;p&gt;Provided &lt;a href=&quot;https://gist.github.com/corvax19/4d8b9a9661e1dcd775d3&quot;&gt;script&lt;/a&gt; is writen in AWK,
+which should be available on virtually any UNIX/LINUX box.
+Run “SQLextract help” to read built-in help.
+Let me explain main usage scenarious.&lt;/p&gt;
+
+&lt;p&gt;Quick scan logs and find all SQL statements:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mcp: corvax$ ./SQLextract yourObjMgr_*
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;1129D660&quot;,&quot;md5&quot;:&quot;738118fffb6904149436c95dcba502f0&quot;,&quot;ts&quot;:&quot;2014-08-25 00:55:07&quot;,&quot;sec&quot;:&quot;0.001&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141766.log&quot;,&quot;fromLine&quot;:5190,&quot;toLine&quot;:5213}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;112EC500&quot;,&quot;md5&quot;:&quot;738118fffb6904149436c95dcba502f0&quot;,&quot;ts&quot;:&quot;2014-08-25 00:55:07&quot;,&quot;sec&quot;:&quot;0.001&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141766.log&quot;,&quot;fromLine&quot;:5230,&quot;toLine&quot;:5253}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;11263900&quot;,&quot;md5&quot;:&quot;8a7f096ac44ddae8ee00adf677af7838&quot;,&quot;ts&quot;:&quot;2014-08-25 00:55:09&quot;,&quot;sec&quot;:&quot;0.147&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141766.log&quot;,&quot;fromLine&quot;:5420,&quot;toLine&quot;:5718}
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you can see, tool reports in JSON. &lt;/p&gt;
+
+&lt;p&gt;Field meanings:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;statement - SELECT or INSERT or UPDATE;&lt;/li&gt;
+  &lt;li&gt;SQLID - ID of the statement as it is refenced in the logfile;&lt;/li&gt;
+  &lt;li&gt;md5 - md5 hash of the statement, so you can recognize them while aggregating;&lt;/li&gt;
+  &lt;li&gt;ts - timestamp;&lt;/li&gt;
+  &lt;li&gt;sec - execution time of the statement;&lt;/li&gt;
+  &lt;li&gt;file - source log file where that particular statement found;&lt;/li&gt;
+  &lt;li&gt;fromLine,toLine - location of the statement in the log file;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Quick scan logs and find all SQL statements with execution time longer than specified (in sec):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mcp: corvax$ ./SQLextract -v exectime=10 yourObjMgr_*
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;1106B190&quot;,&quot;md5&quot;:&quot;73c4bfeedfea4d4a21380aac57897b35&quot;,&quot;ts&quot;:&quot;2014-08-25 06:13:43&quot;,&quot;sec&quot;:&quot;238.040&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141955.log&quot;,&quot;fromLine&quot;:2727,&quot;toLine&quot;:3101}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;20CC27A0&quot;,&quot;md5&quot;:&quot;78083ca2372c10d9f568af09956edd57&quot;,&quot;ts&quot;:&quot;2014-08-25 08:38:23&quot;,&quot;sec&quot;:&quot;32.971&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141994.log&quot;,&quot;fromLine&quot;:66777,&quot;toLine&quot;:66981}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;1D596960&quot;,&quot;md5&quot;:&quot;8a7f096ac44ddae8ee00adf677af7838&quot;,&quot;ts&quot;:&quot;2014-08-25 09:04:08&quot;,&quot;sec&quot;:&quot;13.882&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141994.log&quot;,&quot;fromLine&quot;:112240,&quot;toLine&quot;:112538}
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Previous two examples are scans only.
+Script also could extract detected statements into separate files, providing
+all the same metadata (md5, sec, sourcefile etc.) in the filenames.
+Here is how it looks like.&lt;/p&gt;
+
+&lt;p&gt;Initiall state:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mcp:slow corvax$ ll
+total 76440
+drwxr-xr-x  7 corvax  staff       238 Sep 25 12:37 .
+drwxr-xr-x  5 corvax  staff       170 Sep 25 12:36 ..
+-rwxr-xr-x  1 corvax  staff      4336 Sep 25 12:35 SQLextract
+-rw-------  1 corvax  staff  21596537 Sep 25 12:34 yourObjMgr_enu_0744_780141955.log
+-rw-------  1 corvax  staff  14545580 Sep 25 12:34 yourObjMgr_enu_0744_780141994.log
+-rw-------  1 corvax  staff    534020 Sep 25 12:34 yourObjMgr_enu_0744_780142000.log
+-rw-------  1 corvax  staff   2441813 Sep 25 12:34 yourObjMgr_enu_0744_780142036.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now lets detect and extract into the same location all SQLs with execution time above 10 sec:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mcp:slow corvax$ ./SQLextract -v exectime=10 dump=. *.log
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;1106B190&quot;,&quot;md5&quot;:&quot;73c4bfeedfea4d4a21380aac57897b35&quot;,&quot;ts&quot;:&quot;2014-08-25 06:13:43&quot;,&quot;sec&quot;:&quot;238.040&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141955.log&quot;,&quot;fromLine&quot;:2727,&quot;toLine&quot;:3101}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;20CC27A0&quot;,&quot;md5&quot;:&quot;78083ca2372c10d9f568af09956edd57&quot;,&quot;ts&quot;:&quot;2014-08-25 08:38:23&quot;,&quot;sec&quot;:&quot;32.971&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141994.log&quot;,&quot;fromLine&quot;:66777,&quot;toLine&quot;:66981}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;1D596960&quot;,&quot;md5&quot;:&quot;8a7f096ac44ddae8ee00adf677af7838&quot;,&quot;ts&quot;:&quot;2014-08-25 09:04:08&quot;,&quot;sec&quot;:&quot;13.882&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141994.log&quot;,&quot;fromLine&quot;:112240,&quot;toLine&quot;:112538}
+{&quot;statement&quot;:&quot;SELECT&quot;,&quot;SQLID&quot;=&quot;20B804C0&quot;,&quot;md5&quot;:&quot;1bbcd97145326211188a7b84ad40c7d0&quot;,&quot;ts&quot;:&quot;2014-08-25 10:28:33&quot;,&quot;sec&quot;:&quot;21.660&quot;,&quot;file&quot;:&quot;yourObjMgr_enu_0744_780141994.log&quot;,&quot;fromLine&quot;:292337,&quot;toLine&quot;:292636}
+...
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;When its done, you have following:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;mcp:slow corvax$ ll
+total 76600
+drwxr-xr-x  14 corvax  staff       476 Sep 25 12:38 .
+drwxr-xr-x   5 corvax  staff       170 Sep 25 12:36 ..
+-rw-r--r--   1 corvax  staff     11753 Sep 25 12:38 _yourObjMgr_enu_0744_780141955.log_73c4bfeedfea4d4a21380aac57897b35_lines_2727-3101_id1106B190_238.040_sec.sqlperf
+-rw-r--r--   1 corvax  staff      8429 Sep 25 12:38 _yourObjMgr_enu_0744_780141994.log_1bbcd97145326211188a7b84ad40c7d0_lines_292337-292636_id20B804C0_21.660_sec.sqlperf
+-rw-r--r--   1 corvax  staff      8424 Sep 25 12:38 _yourObjMgr_enu_0744_780141994.log_1bbcd97145326211188a7b84ad40c7d0_lines_484457-484756_id20B9BCE0_33.630_sec.sqlperf
+-rw-r--r--   1 corvax  staff      5590 Sep 25 12:38 _yourObjMgr_enu_0744_780141994.log_78083ca2372c10d9f568af09956edd57_lines_66777-66981_id20CC27A0_32.971_sec.sqlperf
+...
+-rwxr-xr-x   1 corvax  staff      4336 Sep 25 12:35 sqlextract.awk
+-rw-------   1 corvax  staff  21596537 Sep 25 12:34 yourObjMgr_enu_0744_780141955.log
+-rw-------   1 corvax  staff  14545580 Sep 25 12:34 yourObjMgr_enu_0744_780141994.log
+-rw-------   1 corvax  staff    534020 Sep 25 12:34 yourObjMgr_enu_0744_780142000.log
+-rw-------   1 corvax  staff   2441813 Sep 25 12:34 yourObjMgr_enu_0744_780142036.log
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Even with that nice automation you can end with hundreds of bad SQL reports and files.&lt;/p&gt;
+
+&lt;p&gt;Which one should you start with?&lt;/p&gt;
+
+&lt;p&gt;And here comes last feature - buildin statistics.
+At the end of any script invocation there are three TOP5 report:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;most frequent statements&lt;/li&gt;
+  &lt;li&gt;slowest statements&lt;/li&gt;
+  &lt;li&gt;biggest time consumers, which is counter as accumulated 
+execution time per each unique (by md5) statement.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;This is how it looks like:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;TOP5 most frequent statements:
+MD5: 1bbcd97145326211188a7b84ad40c7d0 count: 3
+MD5: 8a7f096ac44ddae8ee00adf677af7838 count: 2
+MD5: 73c4bfeedfea4d4a21380aac57897b35 count: 1
+MD5: 78083ca2372c10d9f568af09956edd57 count: 1
+MD5: 78083ca2372c10d9f568af09956edd57 count: 0
+TOP5 slowest statements:
+MD5: 73c4bfeedfea4d4a21380aac57897b35 count: 238.040
+MD5: 8a7f096ac44ddae8ee00adf677af7838 count: 202.311
+MD5: 1bbcd97145326211188a7b84ad40c7d0 count: 68.314
+MD5: 78083ca2372c10d9f568af09956edd57 count: 32.971
+MD5: 78083ca2372c10d9f568af09956edd57 count: 0
+TOP5 time consuming statements:
+MD5: 73c4bfeedfea4d4a21380aac57897b35 count: 238.04
+MD5: 8a7f096ac44ddae8ee00adf677af7838 count: 216.193
+MD5: 1bbcd97145326211188a7b84ad40c7d0 count: 123.604
+MD5: 78083ca2372c10d9f568af09956edd57 count: 32.971
+MD5: 78083ca2372c10d9f568af09956edd57 count: 0
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If you had extracted statements into separate files already,
+just find the right one (again by md5) and start working on it.&lt;/p&gt;
+
+&lt;p&gt;Happy performance troubleshooting!&lt;/p&gt;
+</description>
+        <pubDate>Thu, 25 Sep 2014 00:00:00 +0200</pubDate>
+        <link>http://siebelmonitoring.com/2014/09/25/find-badly-performing-sql-in-siebel.html</link>
+        <guid isPermaLink="true">http://siebelmonitoring.com/2014/09/25/find-badly-performing-sql-in-siebel.html</guid>
+        
+        <category>siebel</category>
+        
+        <category>SQL</category>
+        
+        <category>performance</category>
+        
+        <category>log</category>
+        
+        <category>analysis</category>
+        
+        
+      </item>
     
       <item>
         <title>Siebel component&#39;s memory usage</title>
